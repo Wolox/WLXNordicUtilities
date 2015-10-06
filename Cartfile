@@ -1,0 +1,7 @@
+# There is a bug in Carthage 0.8.0 when parsing certain tags
+# that is why we are using the commit hash instead of
+# "v4.0-alpha.1"
+github "ReactiveCocoa/ReactiveCocoa" "8ebff4f192ad11dfc62c55e8151c235d005f390b"
+github "CocoaLumberjack/CocoaLumberjack" "swift_2.0"
+github "Wolox/WLXBluetoothDevice" ~> 0.3.0
+github "Wolox/WLXBluetoothDeviceReactiveExtensions" ~> 0.1.1
