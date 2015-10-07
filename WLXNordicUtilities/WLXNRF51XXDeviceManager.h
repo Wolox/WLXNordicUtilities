@@ -11,12 +11,22 @@
 #import <WLXBluetoothDeviceReactiveExtensions/WLXBluetoothDeviceReactiveExtensions.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 
-#import "WLXFirmwareArchive.h"
+#import "WLXFirmwareUploader.h"
+
+extern NSString * const DFUServiceUUIDString;
+extern NSString * const ANCSServiceUUIDString;
+
+extern NSString * const WLXNRF51XXDeviceManagerErrorDomain;
+typedef enum : NSUInteger {
+    DeviceAlreadyConnected,
+    CannotDiscoverDFUDevices
+} WLXNRF51XXDeviceManagerError;
 
 @interface WLXNRF51XXDeviceManager : NSObject
 
-- (RACSignal *)connectWithDFUDevice;
+@property NSUInteger discoveryTimeout;
+@property NSUInteger connectionTimeout;
 
-- (RACSignal *)uploadFirmware:(WLXFirmwareArchive *)firmwareArchive;
+- (RACSignal *)connectWithDFUDevice;
 
 @end

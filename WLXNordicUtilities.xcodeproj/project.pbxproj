@@ -26,6 +26,8 @@
 		9D68B3911BC486D7000DC268 /* Result.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D68B3821BC486AE000DC268 /* Result.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D68B3921BC486D7000DC268 /* WLXBluetoothDevice.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D68B3831BC486AE000DC268 /* WLXBluetoothDevice.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D68B3931BC486D7000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D68B3841BC486AE000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9D68B3971BC5D2F3000DC268 /* WLXFirmwareUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */; settings = {ASSET_TAGS = (); }; };
+		9D68B3981BC5D2F3000DC268 /* WLXFirmwareUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +75,8 @@
 		9D68B3841BC486AE000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WLXBluetoothDeviceReactiveExtensions.framework; path = Carthage/Build/iOS/WLXBluetoothDeviceReactiveExtensions.framework; sourceTree = "<group>"; };
 		9D68B38A1BC486C5000DC268 /* Expecta.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Expecta.framework; path = Carthage/Build/iOS/Expecta.framework; sourceTree = "<group>"; };
 		9D68B38B1BC486C5000DC268 /* Specta.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Specta.framework; path = Carthage/Build/iOS/Specta.framework; sourceTree = "<group>"; };
+		9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WLXFirmwareUploader.h; sourceTree = "<group>"; };
+		9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WLXFirmwareUploader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +133,8 @@
 				9D68B37B1BC48692000DC268 /* WLXNRF51XXDeviceManager.m */,
 				9D68B3611BC4862F000DC268 /* WLXNordicUtilities.h */,
 				9D68B3631BC4862F000DC268 /* Info.plist */,
+				9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */,
+				9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */,
 			);
 			path = WLXNordicUtilities;
 			sourceTree = "<group>";
@@ -166,6 +172,7 @@
 				9D68B37C1BC48692000DC268 /* WLXFirmwareArchive.h in Headers */,
 				9D68B3621BC4862F000DC268 /* WLXNordicUtilities.h in Headers */,
 				9D68B37E1BC48692000DC268 /* WLXNRF51XXDeviceManager.h in Headers */,
+				9D68B3971BC5D2F3000DC268 /* WLXFirmwareUploader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +275,7 @@
 			files = (
 				9D68B37F1BC48692000DC268 /* WLXNRF51XXDeviceManager.m in Sources */,
 				9D68B37D1BC48692000DC268 /* WLXFirmwareArchive.m in Sources */,
+				9D68B3981BC5D2F3000DC268 /* WLXFirmwareUploader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
