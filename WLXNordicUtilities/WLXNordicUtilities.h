@@ -17,3 +17,6 @@ FOUNDATION_EXPORT const unsigned char WLXNordicUtilitiesVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <WLXNordicUtilities/PublicHeader.h>
 
 
+#import "WLXNRF51XXDeviceManager.h"
+#import "WLXFirmwareUploader.h"
+#import "WLXFirmwareArchive.h"
