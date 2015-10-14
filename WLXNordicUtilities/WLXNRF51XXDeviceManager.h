@@ -27,6 +27,8 @@ typedef enum : NSUInteger {
 @property NSUInteger discoveryTimeout;
 @property NSUInteger connectionTimeout;
 
++ (instancetype)defaultDeviceManager;
+
 // @return A signal that when subscribed starts discovering
 // devices in DFU and connect with the first one it discoveres. The
 // signal will send a WLXFirmwareUploader object uppon connection

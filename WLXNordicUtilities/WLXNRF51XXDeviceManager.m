@@ -30,6 +30,11 @@ NSString * const WLXNRF51XXDeviceManagerErrorDomain = @"ar.com.wolox.WLXNRF51XXD
 
 @implementation WLXNRF51XXDeviceManager
 
++ (instancetype)defaultDeviceManager {
+    WLXBluetoothDeviceManager * bluetoothDeviceManager = [WLXBluetoothDeviceManager deviceManager];
+    return [[self alloc] initWithBluetoothDeviceManager:bluetoothDeviceManager];
+}
+
 - (instancetype)initWithBluetoothDeviceManager:(WLXBluetoothDeviceManager *)bluetoothDeviceManager {
     WLXAssertNotNil(bluetoothDeviceManager);
     if (self = [super init]) {
