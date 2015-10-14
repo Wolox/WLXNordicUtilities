@@ -27,6 +27,8 @@ typedef enum : NSUInteger {
 @property NSUInteger discoveryTimeout;
 @property NSUInteger connectionTimeout;
 
++ (instancetype)defaultDeviceManager;
+
 - (RACSignal *)connectWithDFUDevice;
 
 @end
