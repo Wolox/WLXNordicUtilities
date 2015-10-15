@@ -28,6 +28,10 @@
 		9D68B3931BC486D7000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D68B3841BC486AE000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D68B3971BC5D2F3000DC268 /* WLXFirmwareUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9D68B3981BC5D2F3000DC268 /* WLXFirmwareUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */; settings = {ASSET_TAGS = (); }; };
+		9DF4368A1BCF5756006C8894 /* WLXNordicUtilitiesErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DF436881BCF5756006C8894 /* WLXNordicUtilitiesErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9DF4368B1BCF5756006C8894 /* WLXNordicUtilitiesErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF436891BCF5756006C8894 /* WLXNordicUtilitiesErrors.m */; settings = {ASSET_TAGS = (); }; };
+		9DF4368E1BD03756006C8894 /* WLXNordicUtilitiesLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DF4368C1BD03756006C8894 /* WLXNordicUtilitiesLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9DF4368F1BD03756006C8894 /* WLXNordicUtilitiesLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF4368D1BD03756006C8894 /* WLXNordicUtilitiesLogger.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +81,10 @@
 		9D68B38B1BC486C5000DC268 /* Specta.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Specta.framework; path = Carthage/Build/iOS/Specta.framework; sourceTree = "<group>"; };
 		9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WLXFirmwareUploader.h; sourceTree = "<group>"; };
 		9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WLXFirmwareUploader.m; sourceTree = "<group>"; };
+		9DF436881BCF5756006C8894 /* WLXNordicUtilitiesErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WLXNordicUtilitiesErrors.h; sourceTree = "<group>"; };
+		9DF436891BCF5756006C8894 /* WLXNordicUtilitiesErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WLXNordicUtilitiesErrors.m; sourceTree = "<group>"; };
+		9DF4368C1BD03756006C8894 /* WLXNordicUtilitiesLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WLXNordicUtilitiesLogger.h; sourceTree = "<group>"; };
+		9DF4368D1BD03756006C8894 /* WLXNordicUtilitiesLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WLXNordicUtilitiesLogger.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +143,10 @@
 				9D68B3631BC4862F000DC268 /* Info.plist */,
 				9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */,
 				9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */,
+				9DF436881BCF5756006C8894 /* WLXNordicUtilitiesErrors.h */,
+				9DF436891BCF5756006C8894 /* WLXNordicUtilitiesErrors.m */,
+				9DF4368C1BD03756006C8894 /* WLXNordicUtilitiesLogger.h */,
+				9DF4368D1BD03756006C8894 /* WLXNordicUtilitiesLogger.m */,
 			);
 			path = WLXNordicUtilities;
 			sourceTree = "<group>";
@@ -171,6 +183,8 @@
 			files = (
 				9D68B37C1BC48692000DC268 /* WLXFirmwareArchive.h in Headers */,
 				9D68B3621BC4862F000DC268 /* WLXNordicUtilities.h in Headers */,
+				9DF4368E1BD03756006C8894 /* WLXNordicUtilitiesLogger.h in Headers */,
+				9DF4368A1BCF5756006C8894 /* WLXNordicUtilitiesErrors.h in Headers */,
 				9D68B37E1BC48692000DC268 /* WLXNRF51XXDeviceManager.h in Headers */,
 				9D68B3971BC5D2F3000DC268 /* WLXFirmwareUploader.h in Headers */,
 			);
@@ -273,6 +287,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DF4368B1BCF5756006C8894 /* WLXNordicUtilitiesErrors.m in Sources */,
+				9DF4368F1BD03756006C8894 /* WLXNordicUtilitiesLogger.m in Sources */,
 				9D68B37F1BC48692000DC268 /* WLXNRF51XXDeviceManager.m in Sources */,
 				9D68B37D1BC48692000DC268 /* WLXFirmwareArchive.m in Sources */,
 				9D68B3981BC5D2F3000DC268 /* WLXFirmwareUploader.m in Sources */,

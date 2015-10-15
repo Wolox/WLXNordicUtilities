@@ -9,6 +9,12 @@
 #import "WLXFirmwareArchive.h"
 #import <WLXBluetoothDevice/WLXBluetoothDevice.h>
 
+const NSUInteger WLXMaxAmountOfBytesPerPacket = 20;
+
+static NSUInteger calculatePacketsCount(NSData * data) {
+    return (data.length / WLXMaxAmountOfBytesPerPacket) + (data.length % WLXMaxAmountOfBytesPerPacket != 0);
+}
+
 @implementation WLXFirmwareArchive
 
 - (instancetype)initWithManifest:(NSDictionary *)manifest binary:(NSData *)binary metadata:(NSData *)metadata {
@@ -19,6 +25,8 @@
         _manifest = manifest;
         _binary = binary;
         _metadata = metadata;
+        _binaryPacketsCount = calculatePacketsCount(binary);
+        _metadataPacketsCount = calculatePacketsCount(metadata);
     }
     return self;
 }

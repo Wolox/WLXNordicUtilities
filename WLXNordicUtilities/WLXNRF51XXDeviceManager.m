@@ -7,6 +7,8 @@
 //
 
 #import "WLXNRF51XXDeviceManager.h"
+#import "WLXNordicUtilitiesErrors.h"
+#import "WLXNordicUtilitiesLogger.h"
 
 NSString * const DFUServiceUUIDString = @"00001530-1212-EFDE-1523-785FEABCD123";
 NSString * const ANCSServiceUUIDString = @"7905F431-B5CE-4E99-A40F-4B1E122D00D0";
@@ -14,21 +16,20 @@ NSString * const ANCSServiceUUIDString = @"7905F431-B5CE-4E99-A40F-4B1E122D00D0"
 const NSUInteger DefaultDiscoveryTimeout = 30000; // 30s
 const NSUInteger DefaultConnectionTimeout = 2000; // 2s
 
-NSString * const WLXNRF51XXDeviceManagerErrorDomain = @"ar.com.wolox.WLXNRF51XXDeviceManagerErrorDomain";
-
 @interface WLXNRF51XXDeviceManager ()
 
 @property WLXBluetoothDeviceManager * bluetoothDeviceManager;
 @property WLXReactiveDeviceDiscovererDelegate * discovererDelegate;
 @property WLXReactiveConnectionManagerDelegate * connectionManagerDelegate;
 @property NSArray * discoveryServices;
-@property WLXFirmwareUploader * connectedUploader;
 @property CBUUID * DFUServiceUUID;
 @property CBUUID * ANCSServiceUUID;
 
 @end
 
 @implementation WLXNRF51XXDeviceManager
+
+WLX_NU_DYNAMIC_LOGGER_METHODS
 
 + (instancetype)defaultDeviceManager {
     WLXBluetoothDeviceManager * bluetoothDeviceManager = [WLXBluetoothDeviceManager deviceManager];
@@ -51,20 +52,9 @@ NSString * const WLXNRF51XXDeviceManagerErrorDomain = @"ar.com.wolox.WLXNRF51XXD
     return self;
 }
 
-- (RACSignal *)connectWithDFUDevice {
-    if (self.connectedUploader != nil) {
-        return [RACSignal error:[NSError errorWithDomain:WLXNRF51XXDeviceManagerErrorDomain
-                                                    code:DeviceAlreadyConnected
-                                                userInfo:nil]];
-    }
-    
-    return [[[self discoverDFUDevices] flattenMap:^(WLXDeviceDiscoveryData * discoveryData) {
-        return [[self connectWithDevice:discoveryData] map:^(id<WLXConnectionManager> connectionManager) {
-            return [[WLXFirmwareUploader alloc] initWithConnectionManager:connectionManager
-                                                                 delegate:self.connectionManagerDelegate];
-        }];
-    }] doNext:^(WLXFirmwareUploader * uploader) {
-        self.connectedUploader = uploader;
+- (RACSignal *)connectWithDFUDeviceAndUploadFirmware:(WLXFirmwareArchive *)firmwareArchive; {
+    return [[self connectWithDFUDevice] flattenMap:^(id<WLXConnectionManager> connectionManager) {
+        return [self uploadFirmware:firmwareArchive withConnectionManager:connectionManager];
     }];
 }
 
@@ -77,6 +67,7 @@ NSString * const WLXNRF51XXDeviceManagerErrorDomain = @"ar.com.wolox.WLXNRF51XXD
 // @return A signal that when subscribed it will discover and send the first DFU device that
 // it is advertaising DFU services.
 - (RACSignal *)discoverDFUDevices {
+    WLXNULogDebug(@"Start discovering DFU devices");
     return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         [[[self.discovererDelegate.discoveredDevice take:1]
          takeUntil:self.discovererDelegate.stopDiscoveringDevices]
@@ -87,14 +78,12 @@ NSString * const WLXNRF51XXDeviceManagerErrorDomain = @"ar.com.wolox.WLXNRF51XXD
                                                       andTimeout:self.discoveryTimeout];
         
         if (!discovering) {
-            NSError * error = [NSError errorWithDomain:WLXNRF51XXDeviceManagerErrorDomain
-                                                  code:CannotDiscoverDFUDevices
-                                              userInfo:nil];
-            [subscriber sendError:error];
+            [subscriber sendError:CannotDiscoverDFUDevicesError()];
         }
         
         return [RACDisposable disposableWithBlock:^{
             if (self.discoverer.discovering) {
+                WLXNULogDebug(@"Stop discovering DFU devices");
                 [self.discoverer stopDiscoveringDevices];
             }
         }];
@@ -135,6 +124,21 @@ NSString * const WLXNRF51XXDeviceManagerErrorDomain = @"ar.com.wolox.WLXNRF51XXD
         
         // TODO cancel connection process. This feature is not supported by WLXBluetoothDevice yet.
         return nil;
+    }];
+}
+
+- (RACSignal *)uploadFirmware:(WLXFirmwareArchive *)firmwareArchive
+        withConnectionManager:(id<WLXConnectionManager>)connectionManager {
+    WLXServiceManager * DFUServiceManager = [connectionManager.servicesManager managerForService:self.DFUServiceUUID];
+    WLXFirmwareUploader * uploader = [[WLXFirmwareUploader alloc] initWithDFUServiceManager:DFUServiceManager
+                                                                                   delegate:self.connectionManagerDelegate
+                                                                                   firmware:firmwareArchive];
+    return [uploader uploadFirmware];
+}
+
+- (RACSignal *)connectWithDFUDevice {
+    return [[self discoverDFUDevices] flattenMap:^(WLXDeviceDiscoveryData * discoveryData) {
+        return [self connectWithDevice:discoveryData];
     }];
 }
 

@@ -14,11 +14,21 @@
 
 #import "WLXFirmwareArchive.h"
 
+@interface WLXFirmwareUploadChunk : NSObject
+
+@property (nonatomic, readonly) NSUInteger transferedBytes;
+@property (nonatomic, readonly) NSUInteger totalBytesToTransfer;
+
+@end
+
 @interface WLXFirmwareUploader : NSObject
 
-- (instancetype)initWithConnectionManager:(id<WLXConnectionManager>)connectionManager
-                                 delegate:(WLXReactiveConnectionManagerDelegate *)delegate;
+- (instancetype)initWithDFUServiceManager:(WLXServiceManager *)DFUServiceManager
+                                 delegate:(WLXReactiveConnectionManagerDelegate *)delegate
+                                 firmware:(WLXFirmwareArchive *)firmwareArchive;
 
-- (RACSignal *)uploadFirmware:(WLXFirmwareArchive *)firmwareArchive;
+// @return A signal that when subscribed starts uploading the firmware
+// and send WLXFirmwareUploadChunk object for every firmware chunk.
+- (RACSignal *)uploadFirmware;
 
 @end
