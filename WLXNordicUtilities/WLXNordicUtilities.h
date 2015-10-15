@@ -20,5 +20,5 @@ FOUNDATION_EXPORT const unsigned char WLXNordicUtilitiesVersionString[];
 #import "WLXNRF51XXDeviceManager.h"
 #import "WLXFirmwareUploader.h"
 #import "WLXFirmwareArchive.h"
-#import "WLXNodricUtilitiesErrors.h"
-#import "WLXNodricUtilitiesLogger.h"
+#import "WLXNordicUtilitiesErrors.h"
+#import "WLXNordicUtilitiesLogger.h"
