@@ -8,36 +8,66 @@
 
 #import "WLXNordicUtilitiesErrors.h"
 
+static NSString * getErrorMessage(WLXNordicUtilitiesErrors error) {
+    switch (error) {
+        case CannotDiscoverDFUDevices:
+            return @"Cannot discover DFU devices";
+        case UnsupportedResponseOperation:
+            return @"Unsupported response operation";
+        case AlreadyUploadingFirmware:
+            return @"Already uploading firmware";
+        case FailToStartDFU:
+            return @"Fail to start DFU";
+        case FailToSendMetadata:
+            return @"Fail to send metadata";
+        case FailToUploadFirmware:
+            return @"Fail to upload firmware";
+        case FailToValidateFirmware:
+            return @"Fail to validate firmware";
+        case FailToActivateFirmware:
+        default:
+            return nil;
+    }
+}
+
 NSString * const WLXNordicUtilitiesErrorDomain = @"ar.com.wolox.WLXNordicUtilitiesError";
 
 NSError * CannotDiscoverDFUDevicesError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:CannotDiscoverDFUDevices userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(CannotDiscoverDFUDevices) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:CannotDiscoverDFUDevices userInfo:userInfo];
 }
 
 NSError * UnsupportedResponseOperationError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:UnsupportedResponseOperation userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(UnsupportedResponseOperation) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:UnsupportedResponseOperation userInfo:userInfo];
 }
 
 NSError * AlreadyUploadingFirmwareError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:AlreadyUploadingFirmware userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(AlreadyUploadingFirmware) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:AlreadyUploadingFirmware userInfo:userInfo];
 }
 
 NSError * FailToStartDFUError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToStartDFU userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(FailToStartDFU) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToStartDFU userInfo:userInfo];
 }
 
 NSError * FailToSendMetadataError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToSendMetadata userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(FailToSendMetadata) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToSendMetadata userInfo:userInfo];
 }
 
 NSError * FailToUploadFirmwareError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToUploadFirmware userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(FailToUploadFirmware) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToUploadFirmware userInfo:userInfo];
 }
 
 NSError * FailToValidateFirmwareError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToValidateFirmware userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(FailToValidateFirmware) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToValidateFirmware userInfo:userInfo];
 }
 
 NSError * FailToActivateFirmwareError() {
-    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToActivateFirmware userInfo:nil];
+    NSDictionary * userInfo = @{ NSLocalizedDescriptionKey : getErrorMessage(FailToActivateFirmware) };
+    return [NSError errorWithDomain:WLXNordicUtilitiesErrorDomain code:FailToActivateFirmware userInfo:userInfo];
 }

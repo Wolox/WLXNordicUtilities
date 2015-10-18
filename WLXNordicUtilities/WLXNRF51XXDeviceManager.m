@@ -117,7 +117,11 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         id<WLXConnectionManager> connectionManager = [self connectionManagerForPeripheral:discoveryData.peripheral];
         [[self.connectionEstablished flattenMap:^(id value) {
-            return [[connectionManager.servicesManager rac_discoverServices] mapReplace:connectionManager];
+            return [[connectionManager.servicesManager rac_discoverServices] then:^{
+                // We need to use `then` instead of map because `rac_discoverServices`
+                // completes without sending values
+                return [RACSignal return:connectionManager];
+            }];
         }] subscribe:subscriber];
         
         [connectionManager connectWithTimeout:self.connectionTimeout];
