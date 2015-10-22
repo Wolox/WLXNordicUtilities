@@ -96,6 +96,9 @@ static NSString * const DFUVersionCharacteritsicUUIDString = @"00001534-1212-EFD
 @property (nonatomic) NSUInteger packetIndex;
 
 @property (nonatomic) BOOL uploading;
+@property (nonatomic) id controlPointObserver;
+@property (nonatomic) id<RACSubscriber> uploaderSubscriber;
+@property (nonatomic) RACDisposable * connectionErrorDisposable;
 
 @end
 
@@ -127,32 +130,33 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
         return [RACSignal error:AlreadyUploadingFirmwareError()];
     }
     
-    return [[[[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         self.uploading = YES;
+        self.uploaderSubscriber = subscriber;
+        
+        // If upload signal completes we don't care about connection lost anymore.
+        RACSignal * connectionLost = [self.connectionManagerDelegate.connectionLost take:1];
+        self.connectionErrorDisposable = [connectionLost subscribeNext:^(NSError * error) {
+            [self sendError:error];
+        }];
+        
         WLXNULogDebug(@"Starting process of uploading firmware");
-        [[[[[[self enableControlPointNotifications]
-           then:^{ return [self startDFURequest]; }]
-           then:^{ return [self writeFirmwareFileSize:(uint32_t)self.firmwareArchive.binary.length]; }]
+        [[[[[self enableControlPointNotifications]
+             then:^{ return [self startDFURequest]; }]
+            then:^{ return [self writeFirmwareFileSize:(uint32_t)self.firmwareArchive.binary.length]; }]
            // TODO: We should probably do something with this value.
            // I am not sure. The Nordic iOS Tools does nothing with this value. Maybe we should
            // check that this value matches the DFU version attribute in manifest.json
            then:^{ return [self readDFUVersion]; }]
-           then:^{ return [self subscribeToControlPointNotifications]; }]
-         subscribeNext:^(NSData * data) {
-             WLXDFUControlPointNotification notification;
-             notification.responseCode = ((uint8_t *)data.bytes)[0];
-             notification.requestCode = ((uint8_t *)data.bytes)[1];
-             notification.responseStatus = ((uint8_t *)data.bytes)[2];
-             [self processControlPointNotification:notification withSubscriber:subscriber];
-         } error:^(NSError *error) {
-             [self resetSystem];
-             [subscriber sendError:error];
-         }];
+          subscribeError:^(NSError *error) {
+              [self resetSystem];
+              [self sendError:error];
+          } completed:^{
+              [self subscribeToControlPointNotifications];
+          }];
         
         return nil;
-    }] merge:[self.connectionManagerDelegate.connectionLost flattenMap:^(NSError * error) {
-        return [RACSignal error:error];
-    }]] doCompleted:^{ self.uploading = NO; }] doError:^(NSError *error) { self.uploading = NO; }];
+    }];
 }
 
 #pragma mark - Private methods
@@ -185,24 +189,51 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     }];
 }
 
-- (RACSignal *)subscribeToControlPointNotifications {
+- (void)subscribeToControlPointNotifications {
     WLXNULogDebug(@"Subscribing to control point notifications");
-    return [self.DFUServiceManager rac_notificationsForCharacteristic:self.DFUControlPointCharacteristicUUID];
+    CBUUID * characteristic = self.DFUControlPointCharacteristicUUID;
+    @weakify(self)
+    self.controlPointObserver = [self.DFUServiceManager addObserverForCharacteristic:characteristic usingBlock:^(NSError * error, NSData * data) {
+        @strongify(self);
+        
+        if (error) {
+            [self sendError:error];
+            return;
+        }
+        
+        WLXDFUControlPointNotification notification;
+        notification.responseCode = ((uint8_t *)data.bytes)[0];
+        notification.requestCode = ((uint8_t *)data.bytes)[1];
+        notification.responseStatus = ((uint8_t *)data.bytes)[2];
+        [self processControlPointNotification:notification];
+    }];
 }
 
-- (void)processControlPointNotification:(WLXDFUControlPointNotification)notification
-                                withSubscriber:(id<RACSubscriber>)subscriber {
+- (void)clean {
+    [self.DFUServiceManager removeObserver:self.controlPointObserver];
+    self.uploaderSubscriber = nil;
+    self.controlPointObserver = nil;
+    self.uploading = NO;
+    [self.connectionErrorDisposable dispose];
+}
+
+- (void)sendError:(NSError *)error {
+    [self.uploaderSubscriber sendError:error];
+    [self clean];
+}
+
+- (void)processControlPointNotification:(WLXDFUControlPointNotification)notification {
     int code = notification.responseCode;
     WLXNULogDebug(@"processing control point notification with response code %d", code);
     switch (notification.responseCode) {
         case PacketReceiptNotificationResponse:
-            [self processPacketReceiptNotificationResponseWithSubscriber:subscriber];
+            [self processPacketReceiptNotificationResponseWithSubscriber:self.uploaderSubscriber];
             break;
         case ResponseCode:
-            [self processRequest:notification withSubscriber:subscriber];
+            [self processRequest:notification withSubscriber:self.uploaderSubscriber];
             break;
         default:
-            [subscriber sendError:UnsupportedResponseOperationError()];
+            [self sendError:UnsupportedResponseOperationError()];
             break;
     }
 }
@@ -213,23 +244,23 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
 }
 
 - (void)processPacketReceiptNotificationResponseWithSubscriber:(id<RACSubscriber>)subscriber {
-    [subscriber sendNext:[self transferedChunk]];
+    [self.uploaderSubscriber sendNext:[self transferedChunk]];
     [self writeFirmwarePacket];
 }
 
 - (void)processRequest:(WLXDFUControlPointNotification)request withSubscriber:(id<RACSubscriber>)subscriber {
     switch (request.requestCode) {
         case StartDFURequest:
-            [self processStartDFURequest:request.responseStatus withSubscriber:subscriber];
+            [self processStartDFURequest:request.responseStatus];
             break;
         case ReceiveFirmwareImageRequest:
-            [self processReceiveFirmwareImageRequest:request.responseStatus withSubscriber:subscriber];
+            [self processReceiveFirmwareImageRequest:request.responseStatus];
             break;
         case ValidateFirmwareRequest:
-            [self processValidateFirmwareRequest:request.responseStatus withSubscriber:subscriber];
+            [self processValidateFirmwareRequest:request.responseStatus];
             break;
         case InitializeDFUParametersRequest:
-            [self processInitializeDFUParametersRequest:request.responseStatus withSubscriber:subscriber];
+            [self processInitializeDFUParametersRequest:request.responseStatus];
             break;
         default:
             break;
@@ -241,11 +272,15 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
         NSUInteger packetBytesAmount;
         if (self.packetIndex == self.firmwareArchive.binaryPacketsCount - 1) {
             packetBytesAmount = self.firmwareArchive.binary.length % WLXMaxAmountOfBytesPerPacket;
+            if (packetBytesAmount == 0) {
+                packetBytesAmount = WLXMaxAmountOfBytesPerPacket;
+            }
+            WLXNULogDebug(@"Writting last firmware packet");
         } else {
             packetBytesAmount = WLXMaxAmountOfBytesPerPacket;
         }
         WLXNULogVerbose(@"Sending firmware packet number %ld. Transfered bytes %ld / %ld",
-                        self.packetIndex, self.transferedBytes, self.firmwareArchive.binary.length);
+                        (unsigned long)self.packetIndex, (unsigned long)self.transferedBytes, (unsigned long)self.firmwareArchive.binary.length);
         NSRange dataRange = NSMakeRange(self.packetIndex * WLXMaxAmountOfBytesPerPacket, packetBytesAmount);
         NSData * data = [self.firmwareArchive.binary subdataWithRange:dataRange];
         [self.DFUServiceManager writeValue:data toCharacteristic:self.DFUPacketCharacteristicUUID];
@@ -254,16 +289,16 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     }
 }
 
-- (void)processStartDFURequest:(WLXDFUOperationStatus)status withSubscriber:(id<RACSubscriber>)subscriber {
+- (void)processStartDFURequest:(WLXDFUOperationStatus)status {
     if (status == OperationSuccessfull) {
         [[self sendMetadata] subscribeError:^(NSError *error) {
-            [subscriber sendError:error];
+            [self sendError:error];
         } completed:^{
             self.transferedBytes = self.firmwareArchive.metadata.length;
-            [subscriber sendNext:[self transferedChunk]];
+            [self.uploaderSubscriber sendNext:[self transferedChunk]];
         }];
     } else {
-        [subscriber sendError:FailToStartDFUError()];
+        [self sendError:FailToStartDFUError()];
     }
 }
 
@@ -271,11 +306,14 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     NSUInteger packetBytesAmount;
     if (isLastPacket) {
         packetBytesAmount = self.firmwareArchive.metadata.length % WLXMaxAmountOfBytesPerPacket;
+        if (packetBytesAmount == 0) {
+            packetBytesAmount = WLXMaxAmountOfBytesPerPacket;
+        }
     } else {
         packetBytesAmount = WLXMaxAmountOfBytesPerPacket;
     }
     WLXNULogVerbose(@"Sending metadata packet number %ld. Transfered bytes %ld / %ld",
-                    packetNumber, packetBytesAmount, self.firmwareArchive.metadata.length);
+                    (unsigned long)packetNumber, (unsigned long)packetBytesAmount, (unsigned long)self.firmwareArchive.metadata.length);
     NSRange dataRange = NSMakeRange(packetNumber * WLXMaxAmountOfBytesPerPacket,  packetBytesAmount);
     NSData * packetData = [self.firmwareArchive.metadata subdataWithRange:dataRange];
     [self.DFUServiceManager writeValue:packetData toCharacteristic:self.DFUPacketCharacteristicUUID];
@@ -288,7 +326,7 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
 }
 
 - (RACSignal *)sendMetadata {
-    WLXNULogDebug(@"Sending metadata of size %ld bytes", self.firmwareArchive.metadata.length);
+    WLXNULogDebug(@"Sending metadata of size %ld bytes", (unsigned long)self.firmwareArchive.metadata.length);
     return [[[self sendMetadataControlPacket:StartInitPacket] then:^{
         NSUInteger i, packets;
         for (i = 0, packets =  self.firmwareArchive.metadataPacketsCount - 1; i < packets; ++i) {
@@ -315,46 +353,63 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     return [self.DFUServiceManager rac_writeValue:data toCharacteristic:self.DFUControlPointCharacteristicUUID];
 }
 
-- (void)processInitializeDFUParametersRequest:(WLXDFUOperationStatus)status
-                               withSubscriber:(id<RACSubscriber>)subscriber {
+- (void)processInitializeDFUParametersRequest:(WLXDFUOperationStatus)status {
     if (status == OperationSuccessfull) {
         WLXNULogDebug(@"Metadata successfully uploaded.");
         WLXNULogDebug(@"Setting up DFU to send firmware binary file.");
         [[[self enablePacketNotifications]
           then:^{ return [self sendReceiveFirmwareImageRequest]; }]
           subscribeError:^(NSError *error) {
-              [subscriber sendError:error];
+              [self sendError:error];
           } completed:^{
               WLXNULogDebug(@"Sending first firmware binary packet");
               [self writeFirmwarePacket];
           }];
     } else {
-        [subscriber sendError:FailToSendMetadataError()];
+        [self sendError:FailToSendMetadataError()];
     }
 }
 
-- (void)processReceiveFirmwareImageRequest:(WLXDFUOperationStatus)status withSubscriber:(id<RACSubscriber>)subscriber {
+- (void)processReceiveFirmwareImageRequest:(WLXDFUOperationStatus)status {
     if (status == OperationSuccessfull) {
         WLXNULogDebug(@"Firmware has been received. Validating it.");
         uint8_t packet = ValidateFirmwareRequest;
         NSData * data = [NSData dataWithBytes:&packet length:sizeof(packet)];
         [[self.DFUServiceManager rac_writeValue:data toCharacteristic:self.DFUControlPointCharacteristicUUID]
-         subscribeError:^(NSError *error) { [subscriber sendError:FailToValidateFirmwareError()]; }];
+         subscribeError:^(NSError *error) { [self sendError:FailToValidateFirmwareError()]; }];
     } else {
-        [subscriber sendError:FailToUploadFirmwareError()];
+        [self sendError:FailToUploadFirmwareError()];
     }
 }
 
-- (void)processValidateFirmwareRequest:(WLXDFUOperationStatus)status withSubscriber:(id<RACSubscriber>)subscriber {
+- (void)processValidateFirmwareRequest:(WLXDFUOperationStatus)status {
     if (status == OperationSuccessfull) {
         WLXNULogDebug(@"Firmware has been validated. Activating and resetting device.");
-        uint8_t packet = ActivateAndResetRequest;
-        NSData * data = [NSData dataWithBytes:&packet length:sizeof(packet)];
-        [self.DFUServiceManager rac_writeValue:data toCharacteristic:self.DFUControlPointCharacteristicUUID];
-        [subscriber sendCompleted];
+        [self.uploaderSubscriber sendCompleted];
+        [self activateAndReset];
     } else {
-        [subscriber sendError:FailToValidateFirmwareError()];
+        [self sendError:FailToValidateFirmwareError()];
     }
+}
+
+- (void)activateAndReset {
+    uint8_t packet = ActivateAndResetRequest;
+    NSData * data = [NSData dataWithBytes:&packet length:sizeof(packet)];
+    NSTimeInterval delayTime = 2.0;
+    WLXNULogDebug(@"Delaying activation for %g seconds", delayTime);
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayTime * NSEC_PER_SEC)), queue, ^{
+        WLXNULogDebug(@"Activating firmware");
+        [self.DFUServiceManager writeValue:data
+                          toCharacteristic:self.DFUControlPointCharacteristicUUID
+                                usingBlock:^(NSError * error) {
+                                    if (error) {
+                                        WLXNULogDebug(@"Firmware could not be activated %@", error);
+                                    } else {
+                                        WLXNULogDebug(@"Firmware successfully activated");
+                                    }
+                                }];
+    });
 }
 
 - (RACSignal *)resetSystem {

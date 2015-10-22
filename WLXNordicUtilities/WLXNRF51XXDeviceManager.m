@@ -11,7 +11,6 @@
 #import "WLXNordicUtilitiesLogger.h"
 
 NSString * const DFUServiceUUIDString = @"00001530-1212-EFDE-1523-785FEABCD123";
-NSString * const ANCSServiceUUIDString = @"7905F431-B5CE-4E99-A40F-4B1E122D00D0";
 
 const NSUInteger DefaultDiscoveryTimeout = 30000; // 30s
 const NSUInteger DefaultConnectionTimeout = 2000; // 2s
@@ -23,7 +22,6 @@ const NSUInteger DefaultConnectionTimeout = 2000; // 2s
 @property WLXReactiveConnectionManagerDelegate * connectionManagerDelegate;
 @property NSArray * discoveryServices;
 @property CBUUID * DFUServiceUUID;
-@property CBUUID * ANCSServiceUUID;
 
 @end
 
@@ -46,8 +44,6 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
         _discoveryTimeout = DefaultDiscoveryTimeout;
         _connectionTimeout = DefaultConnectionTimeout;
         _DFUServiceUUID = [CBUUID UUIDWithString:DFUServiceUUIDString];
-        _ANCSServiceUUID = [CBUUID UUIDWithString:ANCSServiceUUIDString];
-        _discoveryServices = @[_DFUServiceUUID, _ANCSServiceUUID];
     }
     return self;
 }
@@ -73,8 +69,8 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
          takeUntil:self.discovererDelegate.stopDiscoveringDevices]
          subscribe:subscriber];
         
-        BOOL discovering = [self.discoverer discoverDevicesNamed:nil
-                                                    withServices:self.discoveryServices
+        BOOL discovering = [self.discoverer discoverDevicesNamed:@"DFU Syrmo"
+                                                    withServices:nil
                                                       andTimeout:self.discoveryTimeout];
         
         if (!discovering) {
