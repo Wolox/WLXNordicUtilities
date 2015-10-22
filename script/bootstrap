@@ -12,6 +12,7 @@ install_homebrew ()
   if type brew > /dev/null
   then
     echo "    ✔ brew is already installed"
+
     if [ -z "$SKIP_BREW_FORMULAS_UPDATE" ]
     then
       echo ""
@@ -115,7 +116,7 @@ bootstrap_carthage ()
   echo ""
   echo " → Bootstrapping Carthage"
   echo ""
-  carthage_cmd="time carthage bootstrap --platform ios"
+  carthage_cmd="time carthage bootstrap --platform $CARTHAGE_BUILD_PLATFORM"
 
   if [ "$USE_SSH" == "true" ]
   then

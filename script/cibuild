@@ -15,7 +15,7 @@ KEYCHAIN=ios-build.keychain
 
 main ()
 {
-    if [ -f Cartfile ]
+    if [ -f Cartfile ] && [ -f "$SCRIPT_DIR/certificates/cibot.p12" ]
     then
       echo ""
       echo "####### Importing Developer Certificates #######"
@@ -50,7 +50,10 @@ main ()
       fi
     fi
 
-    delete_keychain
+    if [ -f Cartfile ] && [ -f "$SCRIPT_DIR/certificates/cibot.p12" ]
+    then
+      delete_keychain
+    fi
     exit $status
 }
 
