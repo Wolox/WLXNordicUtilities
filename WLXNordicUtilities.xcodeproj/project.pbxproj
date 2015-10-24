@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		9D68B3621BC4862F000DC268 /* WLXNordicUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D68B3611BC4862F000DC268 /* WLXNordicUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9D68B3691BC4862F000DC268 /* WLXNordicUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D68B35E1BC4862F000DC268 /* WLXNordicUtilities.framework */; settings = {ASSET_TAGS = (); }; };
+		9D68B3691BC4862F000DC268 /* WLXNordicUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D68B35E1BC4862F000DC268 /* WLXNordicUtilities.framework */; };
 		9D68B36E1BC4862F000DC268 /* WLXNordicUtilitiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B36D1BC4862F000DC268 /* WLXNordicUtilitiesTests.m */; };
 		9D68B37C1BC48692000DC268 /* WLXFirmwareArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D68B3781BC48692000DC268 /* WLXFirmwareArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9D68B37D1BC48692000DC268 /* WLXFirmwareArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B3791BC48692000DC268 /* WLXFirmwareArchive.m */; settings = {ASSET_TAGS = (); }; };
+		9D68B37D1BC48692000DC268 /* WLXFirmwareArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B3791BC48692000DC268 /* WLXFirmwareArchive.m */; };
 		9D68B37E1BC48692000DC268 /* WLXNRF51XXDeviceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D68B37A1BC48692000DC268 /* WLXNRF51XXDeviceManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9D68B37F1BC48692000DC268 /* WLXNRF51XXDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B37B1BC48692000DC268 /* WLXNRF51XXDeviceManager.m */; settings = {ASSET_TAGS = (); }; };
+		9D68B37F1BC48692000DC268 /* WLXNRF51XXDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B37B1BC48692000DC268 /* WLXNRF51XXDeviceManager.m */; };
 		9D68B3851BC486AE000DC268 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D68B3801BC486AE000DC268 /* CocoaLumberjack.framework */; };
 		9D68B3861BC486AE000DC268 /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D68B3811BC486AE000DC268 /* ReactiveCocoa.framework */; };
 		9D68B3871BC486AE000DC268 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D68B3821BC486AE000DC268 /* Result.framework */; };
@@ -27,11 +27,11 @@
 		9D68B3921BC486D7000DC268 /* WLXBluetoothDevice.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D68B3831BC486AE000DC268 /* WLXBluetoothDevice.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D68B3931BC486D7000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D68B3841BC486AE000DC268 /* WLXBluetoothDeviceReactiveExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D68B3971BC5D2F3000DC268 /* WLXFirmwareUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D68B3951BC5D2F3000DC268 /* WLXFirmwareUploader.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9D68B3981BC5D2F3000DC268 /* WLXFirmwareUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */; settings = {ASSET_TAGS = (); }; };
+		9D68B3981BC5D2F3000DC268 /* WLXFirmwareUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D68B3961BC5D2F3000DC268 /* WLXFirmwareUploader.m */; };
 		9DF4368A1BCF5756006C8894 /* WLXNordicUtilitiesErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DF436881BCF5756006C8894 /* WLXNordicUtilitiesErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9DF4368B1BCF5756006C8894 /* WLXNordicUtilitiesErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF436891BCF5756006C8894 /* WLXNordicUtilitiesErrors.m */; settings = {ASSET_TAGS = (); }; };
+		9DF4368B1BCF5756006C8894 /* WLXNordicUtilitiesErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF436891BCF5756006C8894 /* WLXNordicUtilitiesErrors.m */; };
 		9DF4368E1BD03756006C8894 /* WLXNordicUtilitiesLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DF4368C1BD03756006C8894 /* WLXNordicUtilitiesLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9DF4368F1BD03756006C8894 /* WLXNordicUtilitiesLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF4368D1BD03756006C8894 /* WLXNordicUtilitiesLogger.m */; settings = {ASSET_TAGS = (); }; };
+		9DF4368F1BD03756006C8894 /* WLXNordicUtilitiesLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF4368D1BD03756006C8894 /* WLXNordicUtilitiesLogger.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
