@@ -38,6 +38,6 @@ return WLX_NU_LOG_CONTEXT;                         \
 
 @interface WLXNordicUtilitiesLogger : NSObject
 
-+ (void)setLogLevel:(int)logLevel;
++ (void)setLogLevel:(DDLogLevel)logLevel;
 
 @end
