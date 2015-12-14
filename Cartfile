@@ -1,4 +1,4 @@
 github "Wolox/WLXBluetoothDevice" ~> 0.6.1
-github "Wolox/WLXBluetoothDeviceReactiveExtensions" ~> 0.6.0
-github "ReactiveCocoa/ReactiveCocoa" "v4.0.0-alpha.4"
+github "Wolox/WLXBluetoothDeviceReactiveExtensions" ~> 0.7.0
+github "ReactiveCocoa/ReactiveCocoa" "v4.0.0-alpha.5"
 github "CocoaLumberjack/CocoaLumberjack" ~> 2.2.0
