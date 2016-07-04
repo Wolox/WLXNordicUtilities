@@ -28,6 +28,6 @@ extern NSString * const ANCSServiceUUIDString;
 // Upon establishing a connection it will upload the given
 // application firmware. It will send WLXFirmwareUploadChunk
 // objects for every firmware chunk uploaded.
-- (RACSignal *)connectWithDFUDeviceAndUploadFirmware:(WLXFirmwareArchive *)firmwareArchive;
+- (RACSignal *)connectWithDFUDevice:(NSString *)deviceName andUploadFirmware:(WLXFirmwareArchive *)firmwareArchive;
 
 @end

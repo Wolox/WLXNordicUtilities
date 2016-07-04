@@ -48,8 +48,9 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     return self;
 }
 
-- (RACSignal *)connectWithDFUDeviceAndUploadFirmware:(WLXFirmwareArchive *)firmwareArchive; {
-    return [[self connectWithDFUDevice] flattenMap:^(id<WLXConnectionManager> connectionManager) {
+- (RACSignal *)connectWithDFUDevice:(NSString *)deviceName
+                  andUploadFirmware:(WLXFirmwareArchive *)firmwareArchive {
+    return [[self connectWithDFUDevice:deviceName] flattenMap:^(id<WLXConnectionManager> connectionManager) {
         return [self uploadFirmware:firmwareArchive withConnectionManager:connectionManager];
     }];
 }
@@ -62,14 +63,14 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
 
 // @return A signal that when subscribed it will discover and send the first DFU device that
 // it is advertaising DFU services.
-- (RACSignal *)discoverDFUDevices {
+- (RACSignal *)discoverDFUDevices:(NSString *)deviceName {
     WLXNULogDebug(@"Start discovering DFU devices");
     return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         [[[self.discovererDelegate.discoveredDevice take:1]
          takeUntil:self.discovererDelegate.stopDiscoveringDevices]
          subscribe:subscriber];
         
-        BOOL discovering = [self.discoverer discoverDevicesNamed:@"DFU Syrmo"
+        BOOL discovering = [self.discoverer discoverDevicesNamed:deviceName
                                                     withServices:nil
                                                       andTimeout:self.discoveryTimeout];
         
@@ -136,8 +137,8 @@ WLX_NU_DYNAMIC_LOGGER_METHODS
     return [uploader uploadFirmware];
 }
 
-- (RACSignal *)connectWithDFUDevice {
-    return [[self discoverDFUDevices] flattenMap:^(WLXDeviceDiscoveryData * discoveryData) {
+- (RACSignal *)connectWithDFUDevice:(NSString *)deviceName {
+    return [[self discoverDFUDevices:deviceName] flattenMap:^(WLXDeviceDiscoveryData * discoveryData) {
         return [self connectWithDevice:discoveryData];
     }];
 }
